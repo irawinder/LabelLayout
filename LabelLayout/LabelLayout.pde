@@ -33,22 +33,27 @@ void setup() {
   sheet_72212.addressFont = loadFont("HannotateSC-W5-48.vlw");
   
   familyAddress = loadTable("address/winder_family.tsv");
+  foreignAddresses = loadTable("address/foreign.csv");
+  japanAddresses = loadTable("address/japan.csv");
   
   // Need to calculate dots manually ...
   size(2520, 3564);
   
-  // White Background
-  background(255);
-  
   // Text always aligned to top left
   textAlign(LEFT, TOP);
   
-  LabelSheet sheet = sheet_75227;
+  LabelSheet sheet;
   
-  /**
+  /** ----------------------------------
    * Generate for Ira & Miwa's address
    */
+   
+  sheet = sheet_75227;
   
+  // White Background
+  background(255);
+  
+  pushMatrix();
   translate((int)sheet.marginW(), sheet.marginH());
   
   for (int u=0; u<sheet.COLS; u++) {
@@ -60,13 +65,13 @@ void setup() {
       translate(dU, dV);
       
       // Border
-      stroke(200); noFill();
-      rect(0, 0, sheet.labelW(), sheet.labelH());
+      //stroke(200); noFill();
+      //rect(0, 0, sheet.labelW(), sheet.labelH());
       
       int labelMargin = (int) sheet.labelMargin(0.1);
       translate(labelMargin, labelMargin);
       
-      // US Address
+      // Address
       String name = familyAddress.getString(0, 0);
       String building = familyAddress.getString(0, 1);
       String street = familyAddress.getString(0, 2);
@@ -86,6 +91,144 @@ void setup() {
   }
   
   save("save/2024_Winder_Address.tiff");
+  popMatrix();
+  
+  
+  sheet = sheet_72212;
+  
+  /** ----------------------------------
+   * Generate for US Addresses
+   */
+  
+  int sheetCounter = 0;
+  int addressCounter = 0;
+  boolean finished = false;
+  
+  while(!finished) {
+    
+    // White Background
+    background(255);
+    
+    pushMatrix();
+    translate((int)sheet.marginW(), sheet.marginH());
+    
+    for (int u=0; u<sheet.COLS; u++) {
+      for (int v=0; v<sheet.ROWS; v++) {
+        
+        if (addressCounter < foreignAddresses.getRowCount()) {
+        
+          pushMatrix();
+          int dU = (int)(u*(sheet.labelW() + sheet.gapW()));
+          int dV = (int)(v*(sheet.labelH() + sheet.gapH()));
+          translate(dU, dV);
+          
+          // Border
+          //stroke(200); noFill();
+          //rect(0, 0, sheet.labelW(), sheet.labelH());
+          
+          translate((int) sheet.labelMargin(0.1), (int) sheet.labelMargin(0.1));
+          
+          // Address
+          String name1 = foreignAddresses.getString(addressCounter, 0);
+          String name2 = foreignAddresses.getString(addressCounter, 1);
+          String street = foreignAddresses.getString(addressCounter, 2);
+          String city = foreignAddresses.getString(addressCounter, 3);
+          String country = foreignAddresses.getString(addressCounter, 4);
+          
+          if(name1.equals("Kate, Isai & Esmee")) {
+            name1 = "Kate, Isaí & Esmée";
+          }
+          
+          addressCounter++;
+          
+          fill(0); noStroke();
+          
+          textFont(sheet.nameFont);
+          text(name1 + "\n" + name2, 0, 0);
+          
+          textFont(sheet.addressFont);
+          text(street + "\n" + city + "\n" + country, 0, DOTS_PER_MM * 15);
+          
+          popMatrix();
+          
+        } else {
+          
+            finished = true;
+        }
+      }
+    }
+    
+    save("save/2024_Addresses_Foreign_" + sheetCounter + ".tiff");
+    sheetCounter++;
+    popMatrix();
+  }
+  
+  /** ----------------------------------
+   * Generate for Japan Addresses
+   */
+  
+  sheet.addressFont = loadFont("Courier-48.vlw");
+  sheet.nameFont = loadFont("Courier-48.vlw");
+  sheetCounter = 0;
+  addressCounter = 0;
+  finished = false;
+  
+  while(!finished) {
+    
+    // White Background
+    background(255);
+    
+    pushMatrix();
+    translate((int)sheet.marginW(), sheet.marginH());
+    
+    for (int u=0; u<sheet.COLS; u++) {
+      for (int v=0; v<sheet.ROWS; v++) {
+        
+        if (addressCounter < foreignAddresses.getRowCount()) {
+        
+          pushMatrix();
+          int dU = (int)(u*(sheet.labelW() + sheet.gapW()));
+          int dV = (int)(v*(sheet.labelH() + sheet.gapH()));
+          translate(dU, dV);
+          
+          // Border
+          stroke(200); noFill();
+          rect(0, 0, sheet.labelW(), sheet.labelH());
+          
+          translate((int) sheet.labelMargin(0.1), (int) sheet.labelMargin(0.1));
+          
+          // Address
+          String postcode = japanAddresses.getString(addressCounter, 0);
+          String address = japanAddresses.getString(addressCounter, 1);
+          String building = japanAddresses.getString(addressCounter, 2);
+          String name = japanAddresses.getString(addressCounter, 3);
+          
+          addressCounter++;
+          
+          fill(0); noStroke();
+          
+          textFont(sheet.addressFont);
+          text(postcode, 0, 0);
+          
+          textFont(sheet.addressFont);
+          text(address + "\n" + building, DOTS_PER_MM * 4, DOTS_PER_MM * 10);
+          
+          textFont(sheet.nameFont);
+          text(name, DOTS_PER_MM * 4, DOTS_PER_MM * 22);
+          
+          popMatrix();
+          
+        } else {
+          
+            finished = true;
+        }
+      }
+    }
+    
+    save("save/2024_Addresses_Japan_" + sheetCounter + ".tiff");
+    sheetCounter++;
+    popMatrix();
+  }
 }
 
 class LabelSheet {
