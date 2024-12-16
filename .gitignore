@@ -1,0 +1,5 @@
+*.DS_Store
+/LabelLayout/keep
+/LabelLayout/save
+*.tsv
+*.tiff
