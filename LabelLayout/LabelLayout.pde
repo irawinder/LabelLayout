@@ -1,3 +1,29 @@
+/**
+ * Written by Ira on 2024.12.16
+ *
+ * Directions:
+ *
+ * 1. Address Data 
+ *   
+ * -- When exporting CSVs from Excel, Make sure UTF8 Mode is enabled!!! --
+ *
+ * winder_family.tsv - is manually typed .. update our home address as necessary
+ * foreign.csv       - are non-japanese addressed exported from FamilyContacts.xlsx ("Export - Other" Tab)
+ * japan.csv         - are japanese addresses exported from FamilyContacts.xlsx ("Export - Japan" Tab)
+ * 
+ * 2. Run & Process
+ * 
+ * - New sheets are saved in the "save" folder. These are overridden each time.
+ * - When a sheet is ready to "keep," move it into the "keep" folder
+ * - Open each sheet in photoshop and set the images size to be 210mm x 297mm with 120 dots per cm.
+ *   - This is an important step to make sure the printing is scaled correctly
+ *
+ * 3. Printing
+ *
+ * - Make sure paper size is A4, and scale is 100%.
+ * - Printer sheets go into the brother print face down
+ */
+
 float DOTS_PER_MM = 12;
 float A4_W_MM = 210;
 float A4_H_MM = 297;
@@ -161,14 +187,20 @@ void setup() {
     save("save/2024_Addresses_Foreign_" + sheetCounter + ".tiff");
     sheetCounter++;
     popMatrix();
+    
+    if (addressCounter >= foreignAddresses.getRowCount()) {
+      finished = true;
+    }
   }
   
   /** ----------------------------------
    * Generate for Japan Addresses
    */
   
+  // Change to font w/ Japanese characters
   sheet.addressFont = loadFont("Courier-48.vlw");
   sheet.nameFont = loadFont("Courier-48.vlw");
+  
   sheetCounter = 0;
   addressCounter = 0;
   finished = false;
@@ -184,7 +216,7 @@ void setup() {
     for (int u=0; u<sheet.COLS; u++) {
       for (int v=0; v<sheet.ROWS; v++) {
         
-        if (addressCounter < foreignAddresses.getRowCount()) {
+        if (addressCounter < japanAddresses.getRowCount()) {
         
           pushMatrix();
           int dU = (int)(u*(sheet.labelW() + sheet.gapW()));
@@ -192,8 +224,8 @@ void setup() {
           translate(dU, dV);
           
           // Border
-          stroke(200); noFill();
-          rect(0, 0, sheet.labelW(), sheet.labelH());
+          //stroke(200); noFill();
+          //rect(0, 0, sheet.labelW(), sheet.labelH());
           
           translate((int) sheet.labelMargin(0.1), (int) sheet.labelMargin(0.1));
           
@@ -228,6 +260,10 @@ void setup() {
     save("save/2024_Addresses_Japan_" + sheetCounter + ".tiff");
     sheetCounter++;
     popMatrix();
+    
+    if (addressCounter >= japanAddresses.getRowCount()) {
+      finished = true;
+    }
   }
 }
 
